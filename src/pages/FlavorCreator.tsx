@@ -157,7 +157,8 @@ export default function FlavorCreator() {
                           : 'hover:bg-white/10 hover:border-white/20'
                       } ${selectedFlavors.length >= 3 && !isSelected ? 'opacity-30 cursor-not-allowed' : ''}`}
                       style={isSelected ? {
-                        ringColor: flavor.color,
+                        outline: `2px solid ${flavor.color}`,
+                        outlineOffset: '2px',
                         boxShadow: `0 0 25px ${flavor.color}40`,
                         borderColor: `${flavor.color}60`,
                       } : {}}
