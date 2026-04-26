@@ -1,0 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 356 78% 51%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 40 90% 60%;
+    --accent-foreground: 0 0% 4%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 356 78% 51%;
+    --radius: 0.625rem;
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 356 78% 51%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 356 78% 51%;
+
+    --coke-red: #E61D2B;
+    --coke-neon: #FF2A3B;
+    --coke-dark: #0A0A0A;
+    --coke-gold: #F5B042;
+    --coke-silver: #C0C0C0;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(230, 29, 43, 0.4) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: rgba(230, 29, 43, 0.4);
+    border-radius: 3px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(230, 29, 43, 0.7);
+  }
+
+  body {
+    @apply bg-coke-dark text-white;
+    font-family: 'Inter', 'Space Grotesk', sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Bebas Neue', 'Montserrat', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  /* Accessibility: focus-visible */
+  :focus-visible {
+    outline: 2px solid var(--coke-neon);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: rgba(230, 29, 43, 0.4);
+    color: #fff;
+  }
+}
+
+@layer components {
+  .liquid-glass {
+    @apply backdrop-blur-xl bg-white/5 border border-white/10;
+  }
+
+  .neon-glow {
+    text-shadow: 0 0 10px var(--coke-neon), 0 0 20px var(--coke-neon), 0 0 40px var(--coke-neon);
+  }
+
+  .gradient-liquid {
+    background: linear-gradient(135deg, rgba(230, 29, 43, 0.3) 0%, transparent 50%, rgba(245, 176, 66, 0.2) 100%);
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #F5B042 0%, #FFD700 50%, #F5B042 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Shimmer moving text effect */
+  .text-shimmer {
+    background: linear-gradient(
+      90deg,
+      #fff 0%,
+      #FF2A3B 25%,
+      #F5B042 50%,
+      #FF2A3B 75%,
+      #fff 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  /* Cosmic background with animated gradient */
+  .cosmic-bg {
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(230, 29, 43, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, rgba(245, 176, 66, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(30, 144, 255, 0.08) 0%, transparent 50%);
+  }
+
+  /* Liquid border — animated gradient border */
+  .liquid-border {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .liquid-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--coke-red), var(--coke-gold), var(--coke-neon));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: borderRotate 4s linear infinite;
+    background-size: 300% 300%;
+  }
+
+  /* Glass card with enhanced depth */
+  .glass-card {
+    @apply backdrop-blur-xl border border-white/10 rounded-2xl;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Pulse ring for timeline nodes */
+  .pulse-ring {
+    animation: pulseRing 2s ease-out infinite;
+  }
+
+  /* Section divider gradient line */
+  .section-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--coke-red) 50%, transparent 100%);
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+}
+
+/* ===== KEYFRAMES ===== */
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes borderRotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes waveFlow {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100vh); opacity: 0; }
+}
+
+@keyframes liquidFill {
+  0% { clip-path: inset(100% 0 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blinkCaret {
+  0%, 100% { border-color: transparent; }
+  50% { border-color: var(--coke-neon); }
+}
