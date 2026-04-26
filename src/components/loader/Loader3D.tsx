@@ -27,8 +27,9 @@ export default function Loader3D({ onComplete }: Loader3DProps) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountNode.appendChild(renderer.domElement);
 
+    // Fewer stars for performance
     const starsGeometry = new THREE.BufferGeometry();
-    const starsCount = 800;
+    const starsCount = 150;
     const starsPositions = new Float32Array(starsCount * 3);
     for (let i = 0; i < starsCount * 3; i++) {
       starsPositions[i] = (Math.random() - 0.5) * 20;
@@ -36,14 +37,17 @@ export default function Loader3D({ onComplete }: Loader3DProps) {
     starsGeometry.setAttribute('position', new THREE.BufferAttribute(starsPositions, 3));
     const starsMaterial = new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 0.02,
+      size: 0.03,
       transparent: true,
-      opacity: 0.6
+      opacity: 0.3,
+      blending: THREE.AdditiveBlending
     });
     const stars = new THREE.Points(starsGeometry, starsMaterial);
     scene.add(stars);
 
-    const particlesCount = 3000;
+    // Adaptive particle count based on device
+    const isMobile = window.innerWidth < 768;
+    const particlesCount = isMobile ? 1200 : 3000;
     const particlesGeometry = new THREE.BufferGeometry();
     const targetPositions = new Float32Array(particlesCount * 3);
     const initialPositions = new Float32Array(particlesCount * 3);
@@ -71,10 +75,10 @@ export default function Loader3D({ onComplete }: Loader3DProps) {
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(initialPositions, 3));
     const particlesMaterial = new THREE.PointsMaterial({
       color: 0xe61d2b,
-      size: 0.03,
+      size: isMobile ? 0.05 : 0.04,
       blending: THREE.AdditiveBlending,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.9,
     });
     const particles = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particles);
@@ -82,12 +86,18 @@ export default function Loader3D({ onComplete }: Loader3DProps) {
     const ambientLight = new THREE.AmbientLight(0x404040);
     scene.add(ambientLight);
 
+    // Faster loader — 2s instead of 3s
     const tl = gsap.timeline({
       onComplete: () => {
-        gsap.to(particlesMaterial, { opacity: 0, duration: 0.8 });
-        gsap.to(starsMaterial, { opacity: 0, duration: 0.8 });
-        gsap.to(renderer.domElement, { opacity: 0, duration: 0.8, onComplete: () => {
+        gsap.to(particlesMaterial, { opacity: 0, duration: 0.4 });
+        gsap.to(starsMaterial, { opacity: 0, duration: 0.4 });
+        gsap.to(renderer.domElement, { opacity: 0, duration: 0.4, onComplete: () => {
+          particlesGeometry.dispose();
+          particlesMaterial.dispose();
+          starsGeometry.dispose();
+          starsMaterial.dispose();
           renderer.dispose();
+          
           if (onComplete) onComplete();
         }});
       }
@@ -98,7 +108,7 @@ export default function Loader3D({ onComplete }: Loader3DProps) {
     const targetArray = targetPositions.slice();
 
     tl.to({}, {
-      duration: 3,
+      duration: 2, // Faster!
       ease: "power3.inOut",
       onUpdate: function() {
         const progress = this.progress();
@@ -109,18 +119,28 @@ export default function Loader3D({ onComplete }: Loader3DProps) {
       }
     });
 
-    tl.to(camera.rotation, { y: Math.PI * 2, duration: 3, ease: "power2.inOut" }, 0);
+    tl.to(camera.rotation, { y: Math.PI * 2, duration: 2, ease: "power2.inOut" }, 0);
 
+    let animId: number;
     const animate = () => {
-      requestAnimationFrame(animate);
-      stars.rotation.y += 0.0002;
-      particles.rotation.y += 0.001;
+      animId = requestAnimationFrame(animate);
+      
+      const time = performance.now() * 0.001;
+      stars.rotation.y += 0.0005;
+      stars.position.y = Math.sin(time) * 0.15;
+      
+      particles.rotation.y += 0.002;
+      particles.rotation.z = Math.sin(time * 0.5) * 0.08;
+      
       renderer.render(scene, camera);
     };
     animate();
 
     return () => {
-      mountNode?.removeChild(renderer.domElement);
+      cancelAnimationFrame(animId);
+      if (mountNode?.contains(renderer.domElement)) {
+        mountNode.removeChild(renderer.domElement);
+      }
     };
   }, [onComplete]);
 

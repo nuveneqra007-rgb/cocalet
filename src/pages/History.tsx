@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, memo } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -51,17 +51,17 @@ const timelineEvents = [
   },
 ]
 
-export default function History() {
+const History = memo(function History() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const timelineRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
 
   useGSAP(() => {
     const ctx = gsap.context(() => {
-      // Title entrance
+      // Title entrance — liquid reveal
       gsap.fromTo('.history-title',
-        { opacity: 0, y: 60 },
-        { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }
+        { opacity: 0, y: 40, clipPath: 'inset(100% 0 0 0)' },
+        { opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)', duration: 1, ease: 'power3.out' }
       )
 
       gsap.fromTo('.history-subtitle',
@@ -97,12 +97,12 @@ export default function History() {
       items?.forEach((item, i) => {
         const isLeft = i % 2 === 0
         gsap.fromTo(item,
-          { opacity: 0, x: isLeft ? -80 : 80, rotateY: isLeft ? 15 : -15 },
+          { opacity: 0, x: isLeft ? -40 : 40 },
           {
             opacity: 1,
             x: 0,
             rotateY: 0,
-            duration: 0.9,
+            duration: 0.7,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: item,
@@ -192,16 +192,16 @@ export default function History() {
       {/* Cosmic BG */}
       <div className="absolute inset-0 cosmic-bg pointer-events-none" />
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
         {/* Hero */}
-        <div className="relative text-center mb-20">
+        <div className="relative text-center mb-12 sm:mb-20">
           <div className="history-hero-glow absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="w-80 h-80 rounded-full bg-coke-gold/10 blur-[80px]" />
           </div>
-          <h1 className="history-title text-5xl sm:text-6xl lg:text-8xl font-heading text-white mb-4">
+          <h1 className="history-title text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-heading text-white mb-3 sm:mb-4">
             HISTORIA <span className="text-gradient-gold">LÍQUIDA</span>
           </h1>
-          <p className="history-subtitle text-white/50 max-w-2xl mx-auto font-body text-lg">
+          <p className="history-subtitle text-white/50 max-w-2xl mx-auto font-body text-base sm:text-lg">
             Un viaje a través del tiempo, donde cada gota cuenta una historia de innovación,
             pasión y el sabor que unió al mundo.
           </p>
@@ -297,4 +297,6 @@ export default function History() {
       <Footer />
     </div>
   )
-}
+})
+
+export default History

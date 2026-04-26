@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, memo } from 'react'
 import gsap from 'gsap'
 import Footer from '@/components/Footer'
 
@@ -38,7 +38,7 @@ const contactInfo = [
   },
 ]
 
-export default function Contact() {
+const Contact = memo(function Contact() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const [focusedField, setFocusedField] = useState<string | null>(null)
@@ -52,7 +52,7 @@ export default function Contact() {
     if (!sectionRef.current) return
 
     const ctx = gsap.context(() => {
-      gsap.fromTo('.contact-title', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1, ease: 'power3.out' })
+      gsap.fromTo('.contact-title', { opacity: 0, y: 40, clipPath: 'inset(100% 0 0 0)' }, { opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)', duration: 1, ease: 'power3.out' })
       gsap.fromTo('.contact-subtitle', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', delay: 0.2 })
       gsap.fromTo('.contact-form', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.3 })
       gsap.fromTo('.contact-info-card',
@@ -131,21 +131,21 @@ export default function Contact() {
   ]
 
   return (
-    <div ref={sectionRef} className="relative min-h-screen pt-28 pb-20">
+    <div ref={sectionRef} className="relative min-h-screen pt-24 sm:pt-28 pb-16 sm:pb-20">
       <div className="absolute inset-0 cosmic-bg pointer-events-none" />
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h1 className="contact-title text-5xl sm:text-6xl lg:text-8xl font-heading text-white mb-4">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-10 sm:mb-16">
+          <h1 className="contact-title text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-heading text-white mb-3 sm:mb-4">
             CONTACTO <span className="text-coke-neon">FRESCO</span>
           </h1>
-          <p className="contact-subtitle text-white/50 max-w-xl mx-auto font-body text-lg">
+          <p className="contact-subtitle text-white/50 max-w-xl mx-auto font-body text-base sm:text-lg">
             ¿Tienes una idea refrescante? Déjanos caer un mensaje y te responderemos
             en un abrir y cerrar de botella.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12">
           {/* Form */}
           <div className="lg:col-span-2">
             {!submitted ? (
@@ -334,4 +334,6 @@ export default function Contact() {
       <Footer />
     </div>
   )
-}
+})
+
+export default Contact

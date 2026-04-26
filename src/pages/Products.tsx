@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, memo } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -66,7 +66,7 @@ const categories = [
   { id: 'sabores', label: 'Sabores', count: products.filter(p => p.category === 'sabores').length },
 ]
 
-export default function Products() {
+export default memo(function Products() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
   const [activeCategory, setActiveCategory] = useState('todos')
@@ -78,50 +78,60 @@ export default function Products() {
 
   useGSAP(() => {
     const ctx = gsap.context(() => {
-      // Title animation
+      const mm = gsap.matchMedia()
+
+      // Title animation — liquid clip reveal
       gsap.fromTo('.products-title',
-        { opacity: 0, y: 60 },
-        { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }
+        { opacity: 0, y: 40, clipPath: 'inset(100% 0 0 0)' },
+        { opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)', duration: 1, ease: 'power3.out' }
       )
 
       gsap.fromTo('.products-subtitle',
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8, delay: 0.3, ease: 'power3.out' }
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.8, delay: 0.2, ease: 'power3.out' }
       )
 
-      // Hero banner parallax
+      // Hero glow
       gsap.fromTo('.products-hero-glow',
         { opacity: 0, scale: 0.5 },
-        { opacity: 1, scale: 1, duration: 1.5, delay: 0.2, ease: 'power3.out' }
+        { opacity: 1, scale: 1, duration: 1.5, delay: 0.1, ease: 'power3.out' }
       )
 
-      // 3D Viewer entrance
-      gsap.fromTo('.bottle-viewer',
-        { opacity: 0, scale: 0.8, rotateY: -30 },
-        { opacity: 1, scale: 1, rotateY: 0, duration: 1.2, delay: 0.5, ease: 'back.out(1.7)' }
-      )
+      // 3D Viewer — mobile gets simpler entrance
+      mm.add('(min-width: 768px)', () => {
+        gsap.fromTo('.bottle-viewer',
+          { opacity: 0, scale: 0.8, rotateY: -30 },
+          { opacity: 1, scale: 1, rotateY: 0, duration: 1.2, delay: 0.4, ease: 'back.out(1.7)' }
+        )
+      })
+      mm.add('(max-width: 767px)', () => {
+        gsap.fromTo('.bottle-viewer',
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.8, delay: 0.3, ease: 'power3.out' }
+        )
+      })
 
       // Category buttons
       gsap.fromTo('.category-btn',
-        { opacity: 0, y: 20, scale: 0.8 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.1, delay: 0.5, ease: 'back.out(1.7)' }
+        { opacity: 0, y: 15, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.07, delay: 0.4, ease: 'power3.out' }
       )
 
       // Cards stagger with ScrollTrigger
       const cards = cardsRef.current?.querySelectorAll('.exotic-card')
       if (cards) {
         gsap.fromTo(cards,
-          { opacity: 0, scale: 0.8, y: 60 },
+          { opacity: 0, y: 40, scale: 0.95 },
           {
             opacity: 1,
             scale: 1,
             y: 0,
-            duration: 0.7,
-            stagger: 0.12,
-            ease: 'back.out(1.4)',
+            duration: 0.6,
+            stagger: 0.08,
+            ease: 'power3.out',
             scrollTrigger: {
               trigger: cardsRef.current,
-              start: 'top 85%',
+              start: 'top 90%',
             },
           }
         )
@@ -161,28 +171,28 @@ export default function Products() {
   }
 
   return (
-    <div ref={sectionRef} className="relative min-h-screen pt-28 pb-20">
+    <div ref={sectionRef} className="relative min-h-screen pt-24 sm:pt-28 pb-16 sm:pb-20">
       {/* Cosmic BG */}
       <div className="absolute inset-0 cosmic-bg pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
         {/* Hero Banner */}
-        <div className="relative mb-16 text-center">
+        <div className="relative mb-10 sm:mb-16 text-center">
           <div className="products-hero-glow absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="w-96 h-96 rounded-full bg-coke-red/10 blur-[100px]" />
           </div>
-          <h1 className="products-title text-5xl sm:text-6xl lg:text-8xl font-heading text-white mb-4">
+          <h1 className="products-title text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-heading text-white mb-3 sm:mb-4">
             UNIVERSO DE <span className="text-shimmer">SABORES</span>
           </h1>
-          <p className="products-subtitle text-white/50 mb-4 max-w-2xl mx-auto font-body text-lg">
+          <p className="products-subtitle text-white/50 mb-4 max-w-2xl mx-auto font-body text-base sm:text-lg">
             Cada producto es un portal a una dimensión de sabor único.
             Explora nuestra colección cósmica.
           </p>
         </div>
 
         {/* Featured 3D Bottle Viewer */}
-        <div className="bottle-viewer mb-20">
-          <div className="glass-card rounded-3xl p-8 overflow-hidden relative">
+        <div className="bottle-viewer mb-12 sm:mb-20">
+          <div className="glass-card rounded-2xl sm:rounded-3xl p-5 sm:p-8 overflow-hidden relative">
             <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-coke-red/20 border border-coke-red/30 text-coke-neon text-xs font-body">
               Interactivo 3D
             </div>
@@ -204,12 +214,12 @@ export default function Products() {
         </div>
 
         {/* Category Filters */}
-        <div className="flex flex-wrap justify-center gap-3 mb-6">
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6">
           {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => handleCategoryChange(cat.id)}
-              className={`category-btn px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+              className={`category-btn px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 flex items-center gap-2 tap-target ${
                 activeCategory === cat.id
                   ? 'bg-gradient-to-r from-coke-red to-coke-neon text-white shadow-glow'
                   : 'glass-card text-white/60 hover:text-white hover:border-white/20'
@@ -233,7 +243,7 @@ export default function Products() {
         {/* Products Grid with Exotic Cards */}
         <div
           ref={cardsRef}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10 justify-items-center"
         >
           {filtered.map((product) => (
             <div
@@ -255,17 +265,17 @@ export default function Products() {
       {/* Product Detail Modal */}
       {selectedProduct && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-6"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
           onClick={() => setSelectedProduct(null)}
         >
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
           <div
-            className="relative glass-card rounded-3xl p-8 max-w-lg w-full animate-in"
+            className="relative glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-lg w-full"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setSelectedProduct(null)}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-all"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-all tap-target"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -311,4 +321,4 @@ export default function Products() {
       <Footer />
     </div>
   )
-}
+})

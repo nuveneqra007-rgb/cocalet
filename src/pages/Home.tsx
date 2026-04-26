@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, memo, useEffect } from 'react'
 import { Link } from 'react-router'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
@@ -10,19 +10,11 @@ import Footer from '@/components/Footer'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const stars = [...Array(60)].map((_, i) => ({
+const stars = [...Array(40)].map((_, i) => ({
   left: `${(i * 7 + 3) % 100}%`,
   top: `${(i * 11 + 5) % 100}%`,
   size: (i % 3) + 1,
   delay: (i * 0.4) % 2,
-}))
-
-const bubbles = [...Array(18)].map((_, i) => ({
-  left: `${(i * 13 + 7) % 100}%`,
-  width: `${(i % 20) + 10}px`,
-  height: `${(i % 20) + 10}px`,
-  delay: `${(i * 0.5) % 3}s`,
-  duration: `${((i % 3) + 4)}s`,
 }))
 
 const featuredProducts = [
@@ -72,7 +64,7 @@ const features = [
   },
 ]
 
-export default function Home() {
+const Home = memo(function Home() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
@@ -81,126 +73,221 @@ export default function Home() {
   const taglineRef = useRef<HTMLParagraphElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
   const featuresRef = useRef<HTMLDivElement>(null)
+  const productsHeadingRef = useRef<HTMLDivElement>(null)
+  const whyHeadingRef = useRef<HTMLDivElement>(null)
+  const isMobile = useRef(window.innerWidth < 768)
+
+  // Detect mobile on mount
+  useEffect(() => {
+    const check = () => { isMobile.current = window.innerWidth < 768 }
+    window.addEventListener('resize', check, { passive: true })
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   useGSAP(() => {
     const ctx = gsap.context(() => {
-      // Split title into letters and animate
-      if (titleRef.current) {
-        const text = titleRef.current.innerText
-        titleRef.current.innerHTML = ''
-        text.split('').forEach((char) => {
-          const span = document.createElement('span')
-          span.innerText = char === ' ' ? '\u00A0' : char
-          span.className = 'title-char'
-          span.style.display = 'inline-block'
-          gsap.set(span, { opacity: 0, y: -120, rotateX: -90, scale: 0.5 })
-          titleRef.current!.appendChild(span)
-        })
+      const mobile = isMobile.current
+      const mm = gsap.matchMedia()
 
-        gsap.to('.title-char', {
-          opacity: 1,
-          y: 0,
-          rotateX: 0,
-          scale: 1,
-          duration: 1,
-          stagger: 0.04,
-          delay: 0.3,
-          ease: 'bounce.out',
-        })
-      }
+      // ======================================
+      // HERO ENTRANCE — Cinematic, staggered
+      // ======================================
+      const heroTL = gsap.timeline({ defaults: { ease: 'power4.out' } })
 
-      // Subtitle liquid reveal
-      gsap.fromTo(subtitleRef.current,
-        { opacity: 0, y: 40, clipPath: 'inset(100% 0 0 0)' },
-        { opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)', duration: 1.2, delay: 1.0, ease: 'power3.out' }
+      // Title: liquid reveal with clip-path
+      heroTL.fromTo(titleRef.current,
+        { opacity: 0, y: mobile ? 20 : 40, clipPath: 'inset(100% 0 0 0)' },
+        { opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)', duration: 1.2 }
       )
 
-      // Tagline fade
-      gsap.fromTo(taglineRef.current,
+      // Subtitle: fade + slide from left on desktop, up on mobile
+      heroTL.fromTo(subtitleRef.current,
+        { opacity: 0, x: mobile ? 0 : -30, y: mobile ? 15 : 0 },
+        { opacity: 1, x: 0, y: 0, duration: 0.8 },
+        '-=0.7'
+      )
+
+      // Tagline: smooth rise
+      heroTL.fromTo(taglineRef.current,
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, delay: 1.3, ease: 'power3.out' }
+        { opacity: 1, y: 0, duration: 0.8 },
+        '-=0.5'
       )
 
-      // CTA buttons
-      gsap.fromTo(ctaRef.current,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 1, delay: 1.5, ease: 'power3.out' }
+      // CTA: pop in
+      heroTL.fromTo(ctaRef.current,
+        { opacity: 0, y: 15, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.7 },
+        '-=0.4'
       )
 
-      // Bottle entrance with dramatic scale
-      gsap.fromTo(bottleRef.current,
-        { opacity: 0, scale: 0.3, rotateY: -60 },
-        { opacity: 1, scale: 1, rotateY: 0, duration: 1.8, delay: 0.6, ease: 'elastic.out(1, 0.5)' }
+      // Bottle: cinematic entrance
+      heroTL.fromTo(bottleRef.current,
+        { opacity: 0, scale: mobile ? 0.85 : 0.7, rotateY: mobile ? 0 : -25, y: mobile ? 30 : 0 },
+        { opacity: 1, scale: 1, rotateY: 0, y: 0, duration: 1.5, ease: 'elastic.out(1, 0.6)' },
+        '-=1.2'
       )
 
-      // Features cards with ScrollTrigger
-      if (featuresRef.current) {
-        const cards = featuresRef.current.querySelectorAll('.feature-card')
-        gsap.fromTo(cards,
-          { opacity: 0, y: 60, scale: 0.85 },
+      // ======================================
+      // SCROLL-TRIGGERED CINEMATIC REVEALS
+      // ======================================
+
+      // Products heading — text reveal
+      if (productsHeadingRef.current) {
+        gsap.fromTo(productsHeadingRef.current,
+          { opacity: 0, y: 50, scale: 0.97 },
           {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.7,
-            stagger: 0.15,
-            ease: 'back.out(1.4)',
+            opacity: 1, y: 0, scale: 1,
+            duration: 0.9,
+            ease: 'power3.out',
             scrollTrigger: {
-              trigger: featuresRef.current,
-              start: 'top 80%',
+              trigger: productsHeadingRef.current,
+              start: 'top 90%',
             },
           }
         )
       }
 
-      // Products stagger
+      // Featured products — staggered reveal with subtle rotation
       gsap.fromTo('.featured-product',
-        { opacity: 0, y: 60, scale: 0.8, rotateY: -20 },
+        { opacity: 0, y: 50, scale: 0.9 },
         {
           opacity: 1,
           y: 0,
           scale: 1,
-          rotateY: 0,
           duration: 0.8,
           stagger: 0.2,
-          ease: 'back.out(1.4)',
+          ease: 'power3.out',
           scrollTrigger: {
             trigger: '.featured-products-grid',
-            start: 'top 80%',
+            start: 'top 85%',
           },
         }
       )
 
-      // Mouse parallax on hero
-      const hero = heroRef.current
-      if (hero) {
+      // Why COKELAB heading
+      if (whyHeadingRef.current) {
+        gsap.fromTo(whyHeadingRef.current,
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1, y: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: whyHeadingRef.current,
+              start: 'top 90%',
+            },
+          }
+        )
+      }
+
+      // Features cards — cinematic stagger
+      if (featuresRef.current) {
+        const cards = featuresRef.current.querySelectorAll('.feature-card')
+        gsap.fromTo(cards,
+          { opacity: 0, y: 40, scale: 0.95 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.7,
+            stagger: 0.12,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: featuresRef.current,
+              start: 'top 85%',
+            },
+          }
+        )
+      }
+
+      // CTA button at bottom
+      gsap.fromTo('.products-cta-btn',
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1, y: 0,
+          duration: 0.6,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.products-cta-btn',
+            start: 'top 95%',
+          },
+        }
+      )
+
+      // ======================================
+      // PARALLAX & MICRO-INTERACTIONS
+      // ======================================
+
+      // Desktop-only mouse parallax on hero
+      mm.add('(min-width: 768px)', () => {
+        const hero = heroRef.current
+        if (!hero) return
+
         const handleMouseMove = (e: MouseEvent) => {
           const rect = hero.getBoundingClientRect()
           const x = (e.clientX - rect.left) / rect.width - 0.5
           const y = (e.clientY - rect.top) / rect.height - 0.5
 
           gsap.to(bottleRef.current, {
-            rotateY: x * 25,
-            rotateX: -y * 15,
-            duration: 0.6,
+            rotateY: x * 12,
+            rotateX: -y * 8,
+            duration: 1.5,
             ease: 'power2.out',
+            overwrite: 'auto'
           })
         }
 
-        hero.addEventListener('mousemove', handleMouseMove)
+        hero.addEventListener('mousemove', handleMouseMove, { passive: true })
         return () => hero.removeEventListener('mousemove', handleMouseMove)
-      }
+      })
+
+      // Mobile-only: subtle gyroscope tilt for bottle (if available)
+      mm.add('(max-width: 767px)', () => {
+        let hasGyro = false
+        const handleOrientation = (e: DeviceOrientationEvent) => {
+          if (!hasGyro && (e.beta !== null || e.gamma !== null)) hasGyro = true
+          if (!hasGyro || !bottleRef.current) return
+
+          const beta = Math.max(-30, Math.min(30, e.beta || 0))
+          const gamma = Math.max(-30, Math.min(30, e.gamma || 0))
+
+          gsap.to(bottleRef.current, {
+            rotateX: beta * 0.15,
+            rotateY: gamma * 0.25,
+            duration: 1,
+            ease: 'power2.out',
+            overwrite: 'auto'
+          })
+        }
+
+        window.addEventListener('deviceorientation', handleOrientation, { passive: true })
+        return () => window.removeEventListener('deviceorientation', handleOrientation)
+      })
+
+      // Scroll-driven parallax on cosmic background
+      gsap.to('.cosmic-bg', {
+        yPercent: -15,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1,
+        },
+      })
+
     }, sectionRef)
 
     return () => ctx.revert()
   }, { scope: sectionRef })
 
   return (
-    <div ref={sectionRef} className="relative min-h-screen overflow-hidden bg-coke-dark">
-      {/* Cosmic background */}
-      <div className="absolute inset-0 cosmic-bg pointer-events-none" />
+    <div ref={sectionRef} className="relative min-h-screen overflow-hidden gradient-shift">
+      {/* Cosmic background — parallax target */}
+      <div className="absolute inset-0 cosmic-bg pointer-events-none will-change-transform" />
 
-      {/* Stars */}
+      {/* Stars — reduced count for performance */}
       <div className="absolute inset-0 pointer-events-none">
         {stars.map((star, i) => (
           <div
@@ -211,25 +298,8 @@ export default function Home() {
               top: star.top,
               width: star.size,
               height: star.size,
-              opacity: 0.5,
+              opacity: 0.4,
               animationDelay: `${star.delay}s`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Floating bubbles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {bubbles.map((bubble, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-coke-red/15 animate-float"
-            style={{
-              left: bubble.left,
-              width: bubble.width,
-              height: bubble.height,
-              animationDelay: bubble.delay,
-              animationDuration: bubble.duration,
             }}
           />
         ))}
@@ -238,40 +308,39 @@ export default function Home() {
       {/* === HERO === */}
       <div
         ref={heroRef}
-        className="relative z-10 flex flex-col lg:flex-row items-center justify-center min-h-screen px-6 pt-24 pb-12 gap-8 lg:gap-16 max-w-7xl mx-auto"
+        className="relative z-10 flex flex-col lg:flex-row items-center justify-center min-h-screen px-5 sm:px-6 pt-20 sm:pt-24 pb-10 sm:pb-12 gap-6 sm:gap-8 lg:gap-16 max-w-7xl mx-auto"
       >
         <div className="flex-1 text-center lg:text-left">
           <h1
             ref={titleRef}
-            className="text-7xl sm:text-8xl lg:text-9xl xl:text-[10rem] font-heading text-white leading-none tracking-wider"
+            className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[10rem] font-heading text-white leading-none tracking-wider"
             style={{ perspective: '1000px' }}
           >
             COKELAB
           </h1>
           <p
             ref={subtitleRef}
-            className="mt-3 text-3xl sm:text-4xl font-heading text-coke-neon tracking-[0.3em]"
+            className="mt-2 sm:mt-3 text-2xl sm:text-3xl md:text-4xl font-heading text-coke-neon tracking-[0.2em] sm:tracking-[0.3em]"
           >
             EL ORIGEN
           </p>
           <p
             ref={taglineRef}
-            className="mt-6 text-lg sm:text-xl text-white/60 font-body max-w-lg mx-auto lg:mx-0 leading-relaxed"
+            className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-white/60 font-body max-w-lg mx-auto lg:mx-0 leading-relaxed"
           >
             Descubre la magia detrás del sabor que ha refrescado al mundo durante más de un siglo.
             Una experiencia líquida inmersiva donde el futuro y la tradición se fusionan.
           </p>
-          <div ref={ctaRef} className="mt-8 flex flex-wrap gap-4 justify-center lg:justify-start">
+          <div ref={ctaRef} className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start">
             <Link
               to="/productos"
-              className="group relative px-8 py-4 bg-gradient-to-r from-coke-red to-coke-neon text-white font-semibold rounded-xl overflow-hidden text-sm tracking-wide shadow-glow hover:shadow-glow-lg transition-shadow duration-300"
+              className="btn-liquid text-center"
             >
-              <span className="relative z-10">Explorar Productos</span>
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+              Explorar Productos
             </Link>
             <Link
               to="/historia"
-              className="group relative px-8 py-4 border border-white/20 text-white font-medium rounded-xl overflow-hidden text-sm tracking-wide backdrop-blur-sm hover:border-coke-neon/50 transition-all duration-300"
+              className="group relative px-8 py-4 border border-white/20 text-white font-medium rounded-xl overflow-hidden text-sm tracking-wide backdrop-blur-sm hover:border-coke-neon/50 transition-all duration-300 text-center tap-target"
             >
               <span className="relative z-10">Ver Historia</span>
               <div className="absolute inset-0 bg-coke-red/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
@@ -279,8 +348,8 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex-1 flex items-center justify-center perspective-1000">
-          <div ref={bottleRef} className="w-full max-w-sm lg:max-w-md">
+        <div className="flex-1 flex items-center justify-center perspective-1000 w-full max-w-[280px] sm:max-w-sm lg:max-w-md">
+          <div ref={bottleRef} className="w-full will-change-transform">
             <Bottle3DViewer color="#E61D2B" accentColor="#FF2A3B" />
           </div>
         </div>
@@ -290,19 +359,21 @@ export default function Home() {
       <WaveDivider color="rgba(230, 29, 43, 0.08)" />
 
       {/* === FEATURED PRODUCTS === */}
-      <section className="py-20 px-6 relative">
+      <section className="py-14 sm:py-20 px-5 sm:px-6 relative">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-heading text-white text-center mb-4">
-            Productos <span className="text-shimmer">Destacados</span>
-          </h2>
-          <p className="text-white/40 text-center mb-14 max-w-xl mx-auto font-body">
-            Sabores que trascienden las galaxias
-          </p>
-          <div className="featured-products-grid grid grid-cols-1 md:grid-cols-2 gap-16 justify-items-center">
+          <div ref={productsHeadingRef}>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading text-white text-center mb-3 sm:mb-4">
+              Productos <span className="text-shimmer">Destacados</span>
+            </h2>
+            <p className="text-white/40 text-center mb-10 sm:mb-14 max-w-xl mx-auto font-body text-sm sm:text-base">
+              Sabores que trascienden las galaxias
+            </p>
+          </div>
+          <div className="featured-products-grid grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-16 justify-items-center">
             {featuredProducts.map((product, index) => (
               <div
                 key={index}
-                className="featured-product transform hover:scale-105 transition-transform duration-500"
+                className="featured-product transform hover:scale-105 active:scale-[0.98] transition-transform duration-500"
               >
                 <ExoticProductCard
                   name={product.name}
@@ -313,10 +384,10 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <div className="text-center mt-14">
+          <div className="text-center mt-10 sm:mt-14 products-cta-btn">
             <Link
               to="/productos"
-              className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-coke-red to-coke-neon text-white font-semibold rounded-xl text-sm tracking-wide hover:shadow-glow-lg transition-all duration-300"
+              className="btn-liquid inline-flex items-center gap-2"
             >
               Ver Todos los Productos
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 group-hover:translate-x-1 transition-transform">
@@ -330,25 +401,27 @@ export default function Home() {
       <WaveDivider color="rgba(245, 176, 66, 0.06)" flip />
 
       {/* === FEATURES === */}
-      <section className="py-20 px-6 relative">
+      <section className="py-14 sm:py-20 px-5 sm:px-6 relative">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-4xl sm:text-5xl font-heading text-white text-center mb-4">
-            ¿Por qué <span className="text-coke-neon">COKELAB</span>?
-          </h2>
-          <p className="text-white/40 text-center mb-14 max-w-xl mx-auto font-body">
-            No solo es una bebida. Es una experiencia que redefine lo posible.
-          </p>
-          <div ref={featuresRef} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div ref={whyHeadingRef}>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-heading text-white text-center mb-3 sm:mb-4">
+              ¿Por qué <span className="text-coke-neon">COKELAB</span>?
+            </h2>
+            <p className="text-white/40 text-center mb-10 sm:mb-14 max-w-xl mx-auto font-body text-sm sm:text-base">
+              No solo es una bebida. Es una experiencia que redefine lo posible.
+            </p>
+          </div>
+          <div ref={featuresRef} className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {features.map((feat, i) => (
               <div
                 key={i}
-                className="feature-card glass-card p-8 text-center group hover:border-coke-neon/30 transition-all duration-500"
+                className="feature-card glass-card p-6 sm:p-8 text-center group hover:border-coke-neon/30 transition-all duration-500 liquid-glow"
               >
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-coke-red/10 text-coke-neon mb-5 group-hover:bg-coke-red/20 group-hover:shadow-glow transition-all duration-500">
+                <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-coke-red/10 text-coke-neon mb-4 sm:mb-5 group-hover:bg-coke-red/20 group-hover:shadow-glow transition-all duration-500">
                   {feat.icon}
                 </div>
-                <h3 className="text-2xl font-heading text-white mb-3">{feat.title}</h3>
-                <p className="text-white/50 font-body text-sm leading-relaxed">{feat.desc}</p>
+                <h3 className="text-xl sm:text-2xl font-heading text-white mb-2 sm:mb-3">{feat.title}</h3>
+                <p className="text-white/50 font-body text-xs sm:text-sm leading-relaxed">{feat.desc}</p>
               </div>
             ))}
           </div>
@@ -361,4 +434,6 @@ export default function Home() {
       <Footer />
     </div>
   )
-}
+})
+
+export default Home

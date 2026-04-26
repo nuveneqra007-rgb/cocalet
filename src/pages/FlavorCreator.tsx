@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, memo } from 'react'
 import gsap from 'gsap'
 import Footer from '@/components/Footer'
 
@@ -20,7 +20,7 @@ const confettiParticles = [...Array(24)].map((_, i) => ({
   angle: Math.random() * 360,
 }))
 
-export default function FlavorCreator() {
+const FlavorCreator = memo(function FlavorCreator() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const canRef = useRef<HTMLDivElement>(null)
   const [selectedFlavors, setSelectedFlavors] = useState<string[]>([])
@@ -42,7 +42,7 @@ export default function FlavorCreator() {
     if (!sectionRef.current) return
 
     const ctx = gsap.context(() => {
-      gsap.fromTo('.creator-title', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1, ease: 'power3.out' })
+      gsap.fromTo('.creator-title', { opacity: 0, y: 40, clipPath: 'inset(100% 0 0 0)' }, { opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)', duration: 1, ease: 'power3.out' })
       gsap.fromTo('.creator-subtitle', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.2, ease: 'power3.out' })
       gsap.fromTo('.flavor-drop',
         { opacity: 0, scale: 0, rotateZ: -10 },
@@ -127,19 +127,19 @@ export default function FlavorCreator() {
   const displayName = customName.trim() || 'CUSTOM'
 
   return (
-    <div ref={sectionRef} className="relative min-h-screen pt-28 pb-20">
+    <div ref={sectionRef} className="relative min-h-screen pt-24 sm:pt-28 pb-16 sm:pb-20">
       <div className="absolute inset-0 cosmic-bg pointer-events-none" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6">
-        <h1 className="creator-title text-5xl sm:text-6xl lg:text-8xl font-heading text-white text-center mb-4">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
+        <h1 className="creator-title text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-heading text-white text-center mb-3 sm:mb-4">
           CREA TU <span className="text-coke-neon">SABOR</span>
         </h1>
-        <p className="creator-subtitle text-white/50 text-center mb-16 max-w-2xl mx-auto font-body text-lg">
+        <p className="creator-subtitle text-white/50 text-center mb-10 sm:mb-16 max-w-2xl mx-auto font-body text-base sm:text-lg">
           Sé el alquimista de tu propia experiencia. Mezcla hasta 3 sabores y crea una bebida única en el universo.
         </p>
 
         {!showSuccess ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start">
             {/* Flavor selection */}
             <div>
               <h3 className="text-2xl font-heading text-white mb-2">Ingredientes</h3>
@@ -151,7 +151,7 @@ export default function FlavorCreator() {
                     <button
                       key={flavor.id}
                       onClick={() => handleFlavorClick(flavor.id)}
-                      className={`flavor-drop glass-card rounded-2xl p-4 text-center transition-all duration-300 ${
+                      className={`flavor-drop glass-card rounded-2xl p-3 sm:p-4 text-center transition-all duration-300 tap-target ${
                         isSelected
                           ? 'ring-2 shadow-lg scale-105'
                           : 'hover:bg-white/10 hover:border-white/20'
@@ -369,4 +369,6 @@ export default function FlavorCreator() {
       <Footer />
     </div>
   )
-}
+})
+
+export default FlavorCreator

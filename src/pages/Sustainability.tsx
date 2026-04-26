@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, memo } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -94,15 +94,15 @@ const commitments = [
   },
 ]
 
-export default function Sustainability() {
+const Sustainability = memo(function Sustainability() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const liquidFillRef = useRef<HTMLDivElement>(null)
 
   useGSAP(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo('.sustain-title',
-        { opacity: 0, y: 60 },
-        { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }
+        { opacity: 0, y: 40, clipPath: 'inset(100% 0 0 0)' },
+        { opacity: 1, y: 0, clipPath: 'inset(0% 0 0 0)', duration: 1, ease: 'power3.out' }
       )
 
       gsap.fromTo('.sustain-subtitle',
@@ -180,26 +180,26 @@ export default function Sustainability() {
   }, { scope: sectionRef })
 
   return (
-    <div ref={sectionRef} className="relative min-h-screen pt-28 pb-20">
+    <div ref={sectionRef} className="relative min-h-screen pt-24 sm:pt-28 pb-16 sm:pb-20">
       {/* Green-themed cosmic BG */}
       <div className="absolute inset-0 pointer-events-none" style={{
         background: 'radial-gradient(ellipse at 30% 30%, rgba(34,197,94,0.06) 0%, transparent 50%), radial-gradient(ellipse at 70% 70%, rgba(59,130,246,0.05) 0%, transparent 50%)',
       }} />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
         {/* Hero */}
-        <div className="text-center mb-16">
-          <h1 className="sustain-title text-5xl sm:text-6xl lg:text-8xl font-heading text-white mb-4">
+        <div className="text-center mb-10 sm:mb-16">
+          <h1 className="sustain-title text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-heading text-white mb-3 sm:mb-4">
             COMPROMISO <span className="text-green-400">VERDE</span>
           </h1>
-          <p className="sustain-subtitle text-white/50 max-w-2xl mx-auto font-body text-lg">
+          <p className="sustain-subtitle text-white/50 max-w-2xl mx-auto font-body text-base sm:text-lg">
             Cada gota cuenta. Estamos comprometidos con un futuro donde el sabor
             no le cuesta la Tierra.
           </p>
         </div>
 
         {/* Animated Counter Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-20">
           {stats.map((stat, i) => (
             <AnimatedCounter
               key={i}
@@ -368,4 +368,6 @@ export default function Sustainability() {
       <Footer />
     </div>
   )
-}
+})
+
+export default Sustainability
