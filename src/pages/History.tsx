@@ -196,7 +196,7 @@ const History = memo(function History() {
         {/* Hero */}
         <div className="relative text-center mb-12 sm:mb-20">
           <div className="history-hero-glow absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-80 h-80 rounded-full bg-coke-gold/10 blur-[80px]" />
+            <div className="w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(245,176,66,0.15) 0%, transparent 70%)' }} />
           </div>
           <h1 className="history-title text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-heading text-white mb-3 sm:mb-4">
             HISTORIA <span className="text-gradient-gold">LÍQUIDA</span>

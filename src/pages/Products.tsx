@@ -179,7 +179,7 @@ export default memo(function Products() {
         {/* Hero Banner */}
         <div className="relative mb-10 sm:mb-16 text-center">
           <div className="products-hero-glow absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-96 h-96 rounded-full bg-coke-red/10 blur-[100px]" />
+            <div className="w-96 h-96 rounded-full" style={{ background: 'radial-gradient(circle, rgba(230,29,43,0.15) 0%, transparent 70%)' }} />
           </div>
           <h1 className="products-title text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-heading text-white mb-3 sm:mb-4">
             UNIVERSO DE <span className="text-shimmer">SABORES</span>
@@ -219,16 +219,14 @@ export default memo(function Products() {
             <button
               key={cat.id}
               onClick={() => handleCategoryChange(cat.id)}
-              className={`category-btn px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 flex items-center gap-2 tap-target ${
-                activeCategory === cat.id
+              className={`category-btn px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 flex items-center gap-2 tap-target ${activeCategory === cat.id
                   ? 'bg-gradient-to-r from-coke-red to-coke-neon text-white shadow-glow'
                   : 'glass-card text-white/60 hover:text-white hover:border-white/20'
-              }`}
+                }`}
             >
               {cat.label}
-              <span className={`text-xs px-1.5 py-0.5 rounded-md ${
-                activeCategory === cat.id ? 'bg-white/20' : 'bg-white/5'
-              }`}>
+              <span className={`text-xs px-1.5 py-0.5 rounded-md ${activeCategory === cat.id ? 'bg-white/20' : 'bg-white/5'
+                }`}>
                 {cat.count}
               </span>
             </button>
@@ -284,8 +282,8 @@ export default memo(function Products() {
             <div className="text-center">
               <div className="relative w-48 h-48 mx-auto mb-6">
                 <div
-                  className="absolute inset-0 rounded-full blur-[40px]"
-                  style={{ backgroundColor: `${selectedProduct.color}30` }}
+                  className="absolute inset-0 rounded-full"
+                  style={{ background: `radial-gradient(circle, ${selectedProduct.color}40 0%, transparent 70%)` }}
                 />
                 <img
                   src={selectedProduct.image}

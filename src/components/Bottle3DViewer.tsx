@@ -87,8 +87,8 @@ function BottleFallback({ color = "#E61D2B", accentColor = "#FF2A3B" }: Bottle3D
       <div className="relative" style={{ animation: 'floatGentle 4s ease-in-out infinite' }}>
         {/* Glow behind */}
         <div
-          className="absolute inset-0 rounded-full blur-[40px]"
-          style={{ background: `radial-gradient(circle, ${accentColor}40, transparent 70%)` }}
+          className="absolute inset-0 rounded-full"
+          style={{ background: `radial-gradient(circle, ${accentColor}40 0%, transparent 70%)` }}
         />
         <svg width="160" height="280" viewBox="0 0 160 280" fill="none" className="relative">
           {/* Bottle shape */}

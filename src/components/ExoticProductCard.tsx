@@ -88,6 +88,7 @@ export default function ExoticProductCard({
           style={{
             transformStyle: 'preserve-3d',
             filter: `drop-shadow(0 0 25px ${flavorColor}99)`,
+            mixBlendMode: 'screen'
           }}
         />
       </div>

@@ -3,7 +3,6 @@ import { Link } from 'react-router'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Bottle3DViewer from '@/components/Bottle3DViewer'
 import ExoticProductCard from '@/components/ExoticProductCard'
 import WaveDivider from '@/components/WaveDivider'
 import Footer from '@/components/Footer'
@@ -87,7 +86,6 @@ const Home = memo(function Home() {
   useGSAP(() => {
     const ctx = gsap.context(() => {
       const mobile = isMobile.current
-      const mm = gsap.matchMedia()
 
       // ======================================
       // HERO ENTRANCE — Cinematic, staggered
@@ -121,10 +119,10 @@ const Home = memo(function Home() {
         '-=0.4'
       )
 
-      // Bottle: cinematic entrance
+      // Spline scene: cinematic entrance
       heroTL.fromTo(bottleRef.current,
-        { opacity: 0, scale: mobile ? 0.85 : 0.7, rotateY: mobile ? 0 : -25, y: mobile ? 30 : 0 },
-        { opacity: 1, scale: 1, rotateY: 0, y: 0, duration: 1.5, ease: 'elastic.out(1, 0.6)' },
+        { opacity: 0, scale: mobile ? 0.9 : 0.8, y: mobile ? 30 : 20 },
+        { opacity: 1, scale: 1, y: 0, duration: 1.5, ease: 'power3.out' },
         '-=1.2'
       )
 
@@ -219,52 +217,6 @@ const Home = memo(function Home() {
       // PARALLAX & MICRO-INTERACTIONS
       // ======================================
 
-      // Desktop-only mouse parallax on hero
-      mm.add('(min-width: 768px)', () => {
-        const hero = heroRef.current
-        if (!hero) return
-
-        const handleMouseMove = (e: MouseEvent) => {
-          const rect = hero.getBoundingClientRect()
-          const x = (e.clientX - rect.left) / rect.width - 0.5
-          const y = (e.clientY - rect.top) / rect.height - 0.5
-
-          gsap.to(bottleRef.current, {
-            rotateY: x * 12,
-            rotateX: -y * 8,
-            duration: 1.5,
-            ease: 'power2.out',
-            overwrite: 'auto'
-          })
-        }
-
-        hero.addEventListener('mousemove', handleMouseMove, { passive: true })
-        return () => hero.removeEventListener('mousemove', handleMouseMove)
-      })
-
-      // Mobile-only: subtle gyroscope tilt for bottle (if available)
-      mm.add('(max-width: 767px)', () => {
-        let hasGyro = false
-        const handleOrientation = (e: DeviceOrientationEvent) => {
-          if (!hasGyro && (e.beta !== null || e.gamma !== null)) hasGyro = true
-          if (!hasGyro || !bottleRef.current) return
-
-          const beta = Math.max(-30, Math.min(30, e.beta || 0))
-          const gamma = Math.max(-30, Math.min(30, e.gamma || 0))
-
-          gsap.to(bottleRef.current, {
-            rotateX: beta * 0.15,
-            rotateY: gamma * 0.25,
-            duration: 1,
-            ease: 'power2.out',
-            overwrite: 'auto'
-          })
-        }
-
-        window.addEventListener('deviceorientation', handleOrientation, { passive: true })
-        return () => window.removeEventListener('deviceorientation', handleOrientation)
-      })
-
       // Scroll-driven parallax on cosmic background
       gsap.to('.cosmic-bg', {
         yPercent: -15,
@@ -308,39 +260,39 @@ const Home = memo(function Home() {
       {/* === HERO === */}
       <div
         ref={heroRef}
-        className="relative z-10 flex flex-col lg:flex-row items-center justify-center min-h-screen px-5 sm:px-6 pt-20 sm:pt-24 pb-10 sm:pb-12 gap-6 sm:gap-8 lg:gap-16 max-w-7xl mx-auto"
+        className="relative z-10 flex flex-col lg:flex-row items-center justify-between min-h-screen px-5 sm:px-6 pt-20 sm:pt-24 pb-10 sm:pb-12 gap-8 lg:gap-12 max-w-7xl mx-auto"
       >
-        <div className="flex-1 text-center lg:text-left">
+        <div className="flex-1 text-center lg:text-left z-20 pointer-events-none w-full max-w-2xl">
           <h1
             ref={titleRef}
-            className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[10rem] font-heading text-white leading-none tracking-wider"
+            className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-heading text-white leading-[0.9] tracking-wider"
             style={{ perspective: '1000px' }}
           >
             COKELAB
           </h1>
           <p
             ref={subtitleRef}
-            className="mt-2 sm:mt-3 text-2xl sm:text-3xl md:text-4xl font-heading text-coke-neon tracking-[0.2em] sm:tracking-[0.3em]"
+            className="mt-4 sm:mt-5 text-2xl sm:text-3xl md:text-4xl font-heading text-coke-neon tracking-[0.2em] sm:tracking-[0.3em]"
           >
             EL ORIGEN
           </p>
           <p
             ref={taglineRef}
-            className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-white/60 font-body max-w-lg mx-auto lg:mx-0 leading-relaxed"
+            className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-white/70 font-body max-w-lg mx-auto lg:mx-0 leading-relaxed font-light"
           >
             Descubre la magia detrás del sabor que ha refrescado al mundo durante más de un siglo.
             Una experiencia líquida inmersiva donde el futuro y la tradición se fusionan.
           </p>
-          <div ref={ctaRef} className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start">
+          <div ref={ctaRef} className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap gap-4 justify-center lg:justify-start pointer-events-auto">
             <Link
               to="/productos"
-              className="btn-liquid text-center"
+              className="btn-liquid text-center shadow-[0_0_20px_rgba(230,29,43,0.4)]"
             >
               Explorar Productos
             </Link>
             <Link
               to="/historia"
-              className="group relative px-8 py-4 border border-white/20 text-white font-medium rounded-xl overflow-hidden text-sm tracking-wide backdrop-blur-sm hover:border-coke-neon/50 transition-all duration-300 text-center tap-target"
+              className="group relative px-8 py-4 border border-white/20 text-white font-medium rounded-xl overflow-hidden text-sm tracking-wide backdrop-blur-sm hover:border-coke-neon/50 transition-all duration-300 text-center tap-target hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             >
               <span className="relative z-10">Ver Historia</span>
               <div className="absolute inset-0 bg-coke-red/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
@@ -348,9 +300,15 @@ const Home = memo(function Home() {
           </div>
         </div>
 
-        <div className="flex-1 flex items-center justify-center perspective-1000 w-full max-w-[280px] sm:max-w-sm lg:max-w-md">
-          <div ref={bottleRef} className="w-full will-change-transform">
-            <Bottle3DViewer color="#E61D2B" accentColor="#FF2A3B" />
+        <div className="flex-1 flex items-center justify-center w-full lg:min-w-[50%] h-[400px] sm:h-[500px] lg:h-[700px] relative z-10 mt-8 lg:mt-0">
+          <div ref={bottleRef} className="w-full h-full relative will-change-transform flex items-center justify-center rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+            {/* Contenedor Spline usando Iframe (ampliado para ocultar la marca de agua) */}
+            <iframe 
+              src="https://my.spline.design/3dinstagrampost-4FY6RdAyzjE9YALGq9Dz915k/" 
+              frameBorder="0" 
+              className="absolute top-[-60px] left-[-60px] w-[calc(100%+120px)] h-[calc(100%+120px)]"
+              title="Spline 3D Scene"
+            />
           </div>
         </div>
       </div>
@@ -373,7 +331,7 @@ const Home = memo(function Home() {
             {featuredProducts.map((product, index) => (
               <div
                 key={index}
-                className="featured-product transform hover:scale-105 active:scale-[0.98] transition-transform duration-500"
+                className="featured-product will-change-transform transform hover:scale-105 active:scale-[0.98] transition-transform duration-500"
               >
                 <ExoticProductCard
                   name={product.name}
