@@ -19,13 +19,13 @@ const stars = [...Array(40)].map((_, i) => ({
 const featuredProducts = [
   {
     name: 'COSMIC FIZZ',
-    image: '/images/products/can-classic.png',
+    image: '/images/products/cosmic_fizz.png',
     color: '#FF2A3B',
     description: 'Explosión de sabores intergalácticos con burbujas de energía pura',
   },
   {
     name: 'NEBULA COLA',
-    image: '/images/products/can-zero.png',
+    image: '/images/products/nebula_cola.png',
     color: '#1E90FF',
     description: 'Cola clásica infusionada con polvo de nebulosa cósmica',
   },
@@ -260,30 +260,43 @@ const Home = memo(function Home() {
       {/* === HERO === */}
       <div
         ref={heroRef}
-        className="relative z-10 flex flex-col lg:flex-row items-center justify-between min-h-screen px-5 sm:px-6 pt-20 sm:pt-24 pb-10 sm:pb-12 gap-8 lg:gap-12 max-w-7xl mx-auto"
+        className="relative z-10 flex flex-col items-center justify-center min-h-screen px-5 sm:px-6 pt-20 pb-10 overflow-hidden"
       >
-        <div className="flex-1 text-center lg:text-left z-20 pointer-events-none w-full max-w-2xl">
+        {/* Spline Fullscreen Background */}
+        <div ref={bottleRef} className="absolute inset-0 z-0 pointer-events-auto will-change-transform">
+          <iframe 
+            src="https://my.spline.design/particlesflow-EoDtiMadOFIeOboSDcVWpwH7/" 
+            frameBorder="0" 
+            className="absolute top-[-60px] left-[-60px] w-[calc(100%+120px)] h-[calc(100%+120px)]"
+            title="Spline Fullscreen Background"
+          />
+          {/* Oscurecimiento sutil para que los textos destaquen más */}
+          <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+        </div>
+
+        {/* Text Content - Centered */}
+        <div className="relative z-20 text-center pointer-events-none w-full max-w-4xl mx-auto flex flex-col items-center">
           <h1
             ref={titleRef}
-            className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-heading text-white leading-[0.9] tracking-wider"
+            className="text-6xl sm:text-7xl md:text-8xl lg:text-[10rem] font-heading text-white leading-[0.9] tracking-wider neon-glow"
             style={{ perspective: '1000px' }}
           >
             COKELAB
           </h1>
           <p
             ref={subtitleRef}
-            className="mt-4 sm:mt-5 text-2xl sm:text-3xl md:text-4xl font-heading text-coke-neon tracking-[0.2em] sm:tracking-[0.3em]"
+            className="mt-4 sm:mt-5 text-2xl sm:text-3xl md:text-4xl font-heading text-coke-neon tracking-[0.3em]"
           >
             EL ORIGEN
           </p>
           <p
             ref={taglineRef}
-            className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-white/70 font-body max-w-lg mx-auto lg:mx-0 leading-relaxed font-light"
+            className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-white/80 font-body max-w-2xl mx-auto leading-relaxed font-light"
           >
             Descubre la magia detrás del sabor que ha refrescado al mundo durante más de un siglo.
             Una experiencia líquida inmersiva donde el futuro y la tradición se fusionan.
           </p>
-          <div ref={ctaRef} className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap gap-4 justify-center lg:justify-start pointer-events-auto">
+          <div ref={ctaRef} className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap gap-4 justify-center pointer-events-auto">
             <Link
               to="/productos"
               className="btn-liquid text-center shadow-[0_0_20px_rgba(230,29,43,0.4)]"
@@ -292,23 +305,11 @@ const Home = memo(function Home() {
             </Link>
             <Link
               to="/historia"
-              className="group relative px-8 py-4 border border-white/20 text-white font-medium rounded-xl overflow-hidden text-sm tracking-wide backdrop-blur-sm hover:border-coke-neon/50 transition-all duration-300 text-center tap-target hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+              className="group relative px-8 py-4 border border-white/20 text-white font-medium rounded-xl overflow-hidden text-sm tracking-wide backdrop-blur-md hover:border-coke-neon/50 transition-all duration-300 text-center tap-target hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             >
               <span className="relative z-10">Ver Historia</span>
               <div className="absolute inset-0 bg-coke-red/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
             </Link>
-          </div>
-        </div>
-
-        <div className="flex-1 flex items-center justify-center w-full lg:min-w-[50%] h-[400px] sm:h-[500px] lg:h-[700px] relative z-10 mt-8 lg:mt-0">
-          <div ref={bottleRef} className="w-full h-full relative will-change-transform flex items-center justify-center rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-            {/* Contenedor Spline usando Iframe (ampliado para ocultar la marca de agua) */}
-            <iframe 
-              src="https://my.spline.design/3dinstagrampost-4FY6RdAyzjE9YALGq9Dz915k/" 
-              frameBorder="0" 
-              className="absolute top-[-60px] left-[-60px] w-[calc(100%+120px)] h-[calc(100%+120px)]"
-              title="Spline 3D Scene"
-            />
           </div>
         </div>
       </div>

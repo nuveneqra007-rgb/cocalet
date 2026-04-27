@@ -12,7 +12,7 @@ const products = [
   {
     id: 1,
     name: 'COSMIC FIZZ',
-    image: '/images/products/can-classic.png',
+    image: '/images/products/cosmic_fizz.png',
     color: '#FF2A3B',
     description: 'Frambuesa estelar con burbujas de energía pura',
     category: 'classic',
@@ -20,7 +20,7 @@ const products = [
   {
     id: 2,
     name: 'NEBULA COLA',
-    image: '/images/products/can-zero.png',
+    image: '/images/products/nebula_cola.png',
     color: '#1E90FF',
     description: 'Cola clásica con polvo de nebulosa cósmica',
     category: 'classic',
@@ -28,7 +28,7 @@ const products = [
   {
     id: 3,
     name: 'QUANTUM ZERO',
-    image: '/images/products/can-light.png',
+    image: '/images/products/quantum_zero.png',
     color: '#00CED1',
     description: 'Zero azúcar, sabor cuántico infinito',
     category: 'zero',
@@ -36,7 +36,7 @@ const products = [
   {
     id: 4,
     name: 'CHERRY NOVA',
-    image: '/images/products/can-cherry.png',
+    image: '/images/products/cherry_nova.png',
     color: '#8B0000',
     description: 'Estallido de cereza estelar supernova',
     category: 'sabores',
@@ -44,7 +44,7 @@ const products = [
   {
     id: 5,
     name: 'AURORA MANGO',
-    image: '/images/products/bottle-classic.png',
+    image: '/images/products/aurora_mango.png',
     color: '#FF8C00',
     description: 'Mango tropical bañado en auroras boreales',
     category: 'sabores',
@@ -52,7 +52,7 @@ const products = [
   {
     id: 6,
     name: 'SOLAR PUNCH',
-    image: '/images/products/can-classic.png',
+    image: '/images/products/solar_punch.png',
     color: '#F5B042',
     description: 'Explosión solar de cítricos y energía dorada',
     category: 'classic',
