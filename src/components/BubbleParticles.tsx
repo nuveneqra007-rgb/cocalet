@@ -153,7 +153,7 @@ export default function BubbleParticles() {
     let maxParticles = BASE_COUNT
     let particles: Particle[] = []
 
-    const dpr = Math.min(window.devicePixelRatio, 2)
+    const dpr = Math.min(window.devicePixelRatio, 1.5)
 
     const resize = () => {
       canvas.width = window.innerWidth * dpr
@@ -243,10 +243,10 @@ export default function BubbleParticles() {
         frameCount = 0
 
         // Adaptive: reduce particles if FPS drops
-        if (currentFPS < 45 && maxParticles > 40) {
+        if (currentFPS < 100 && maxParticles > 40) {
           maxParticles = Math.max(40, maxParticles - 20)
           particles = particles.slice(0, maxParticles)
-        } else if (currentFPS > 55 && maxParticles < BASE_COUNT) {
+        } else if (currentFPS > 115 && maxParticles < BASE_COUNT) {
           maxParticles = Math.min(BASE_COUNT, maxParticles + 10)
         }
       }

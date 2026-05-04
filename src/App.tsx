@@ -16,6 +16,7 @@ const FlavorCreator = lazy(() => import('./pages/FlavorCreator'))
 const Contact = lazy(() => import('./pages/Contact'))
 
 gsap.registerPlugin(ScrollTrigger)
+gsap.ticker.fps(120)
 
 // Scroll to top on route change
 function ScrollToTop() {
