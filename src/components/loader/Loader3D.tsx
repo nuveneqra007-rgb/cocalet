@@ -80,7 +80,6 @@ export default function Loader3D({ onComplete }: Loader3DProps) {
 
     const colorRed = new THREE.Color('#E61D2B'); // Coke Red
     const colorNeon = new THREE.Color('#FF2A3B'); // Neon Red
-    const colorGold = new THREE.Color('#F5B042'); // Gold
     const colorDarkRed = new THREE.Color('#900C16'); // Dark liquid
 
     // Mathematical profile of the Coca-Cola Contour Bottle
